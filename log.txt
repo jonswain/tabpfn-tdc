@@ -1,0 +1,4 @@
+Training and inference completed using: mps
+Dataset: caco2_wang
+Train: (728, 210), (728,)
+Test: (182, 210), (182,)

@@ -1,0 +1,12 @@
+name: tabpfn-tdc
+dependencies:
+  - ipykernel
+  - numpy=1.26.4
+  - pandas=2.2.3
+  - pip
+  - python=3.10.16
+  - rdkit=2023.9.6
+  - scikit-learn=1.2.2
+  - pip:
+    - tabpfn==2.0.3
+    - PyTDC==1.1.5 
