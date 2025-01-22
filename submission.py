@@ -59,6 +59,11 @@ def main():
         X_test = createDescriptorDataFrame(test["Drug"]).fillna(0)
         y_test = test["Y"].fillna(0)
 
+        # Large datasets were causing memory issues
+        if len(train_val) > 2000:
+            print(f"Skipping {dataset_name} due to size")
+            continue
+        
         print(f"Train: {X_train.shape}, {y_train.shape}")
         print(f"Test: {X_test.shape}, {y_test.shape}")
 
