@@ -102,7 +102,7 @@ def main():
         print(f"Average time taken: {(end - start)/5:.2f} s")
 
     performance = group.evaluate_many(
-        predictions_list, save_file_name="submissionbbp.txt"
+        predictions_list, save_file_name="submission.txt"
     )
     print(performance)
 
