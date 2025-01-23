@@ -9,7 +9,7 @@ from tdc.benchmark_group import admet_group
 from tqdm import tqdm
 
 
-def calculateDescriptors(mol: Chem.Mol, missingVal: float | None = None) -> dict:
+def calculateDescriptors(mol: Chem.Mol, missingVal: float | None = 0.0) -> dict:
     """Calculate the full list of descriptors for a molecule."""
     res = {}
     for nm, fn in Descriptors._descList:
@@ -21,11 +21,14 @@ def calculateDescriptors(mol: Chem.Mol, missingVal: float | None = None) -> dict
     return res
 
 
-def createDescriptorDataFrame(smiles: list[str]) -> pd.DataFrame:
+def createDescriptorDataFrame(
+    smiles: list[str],
+    max_value: float = torch.finfo(torch.half).max,
+) -> pd.DataFrame:
     """Create a DataFrame of descriptors for a list of SMILES strings."""
     mols = [Chem.MolFromSmiles(smi) for smi in smiles]
     descs = [calculateDescriptors(mol) for mol in mols]
-    return pd.DataFrame(descs)
+    return pd.DataFrame(descs).clip(-max_value, max_value)
 
 
 def getDeviceType() -> str:
@@ -48,60 +51,59 @@ def main():
     group = admet_group(path="data/")
     predictions_list = [{}, {}, {}, {}, {}]
 
-    for dataset_name in group.dataset_names:
+    for dataset_name in ["bbb_martins", "vdss_lombardo", "half_life_obach"]:
         print(f"Dataset: {dataset_name}")
         start = time()
         benchmark = group.get(dataset_name)
         train_val, test = benchmark["train_val"], benchmark["test"]
 
-        X_train = createDescriptorDataFrame(train_val["Drug"]).fillna(0)
-        y_train = train_val["Y"].fillna(0)
-        X_test = createDescriptorDataFrame(test["Drug"]).fillna(0)
-        y_test = test["Y"].fillna(0)
-
         # Large datasets were causing memory issues
-        if len(train_val) > 2000:
+        if len(train_val) > 1800:
             print(f"Skipping {dataset_name} due to size")
             continue
-        
+
+        X_train = createDescriptorDataFrame(train_val["Drug"])
+        y_train = train_val["Y"]
+        X_test = createDescriptorDataFrame(test["Drug"])
+        y_test = test["Y"]
+
         print(f"Train: {X_train.shape}, {y_train.shape}")
         print(f"Test: {X_test.shape}, {y_test.shape}")
 
-        try:
-            for seed in tqdm([1, 2, 3, 4, 5]):
-                params = {
-                    "random_state": seed,
-                    "n_jobs": -1,
-                    "n_estimators": 4,
-                    "device": device_type,
-                }
-                # TODO: Work out how to use memory saving with MPS
-                if device_type == "mps":
-                    params["memory_saving_mode"] = False
+        for seed in tqdm([1, 2, 3, 4, 5]):
+            params = {
+                "random_state": seed,
+                "n_jobs": -1,
+                "n_estimators": 4,
+                "device": device_type,
+            }
+            # TODO: Work out how to use memory saving with MPS
+            if device_type == "mps":
+                params["memory_saving_mode"] = False
 
-                # TabPFN has a maximum number of samples it can handle
-                if len(X_train) > 10000:
-                    X_train = X_train.sample(10000)
-                    y_train = y_train.loc[X_train.index]
+            # TabPFN has a maximum number of samples it can handle
+            if len(X_train) > 10000:
+                X_train = X_train.sample(10000)
+                y_train = y_train.loc[X_train.index]
 
-                if y_test.nunique() == 2:
-                    model = TabPFNClassifier(**params)
-                    model.fit(X_train, y_train)
-                    y_pred = model.predict_proba(X_test)[:, 1]
-                else:
-                    model = TabPFNRegressor(**params)
-                    model.fit(X_train, y_train)
-                    y_pred = model.predict(X_test)
+            if y_test.nunique() == 2:
+                model = TabPFNClassifier(**params)
+                model.fit(X_train, y_train)
+                y_pred = model.predict_proba(X_test)[:, 1]
+            else:
+                model = TabPFNRegressor(**params)
+                model.fit(X_train, y_train)
+                y_pred = model.predict(X_test)
 
-                predictions_list[seed - 1][dataset_name] = y_pred
-            ave, std = group.evaluate_many(predictions_list)[dataset_name]
-            print(f"Performance: {ave:.3f} +/- {std:.3f}")
-            end = time()
-            print(f"Average time taken: {(end - start)/5:.2f} s")
-        except Exception as e:
-            print(f"Error: {e}")
+            predictions_list[seed - 1][dataset_name] = y_pred
+        ave, std = group.evaluate_many(predictions_list)[dataset_name]
+        print(f"Performance: {ave:.3f} +/- {std:.3f}")
+        end = time()
+        print(f"Average time taken: {(end - start)/5:.2f} s")
 
-    performance = group.evaluate_many(predictions_list, save_file_name="submission.txt")
+    performance = group.evaluate_many(
+        predictions_list, save_file_name="submissionbbp.txt"
+    )
     print(performance)
 
 
