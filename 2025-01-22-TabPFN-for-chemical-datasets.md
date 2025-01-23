@@ -36,30 +36,22 @@ TabPFN is designed for small tabular datasets, and the default parameters limit 
 TODO: Look at performance with dataset type, size, and class imbalance
 TODO: For training time specify computational resources used
 
-| Dataset | Size | Task | Metric | Training time (min) | TabFPN performance | Current TDC best performance | TabPFN rank |
+| Dataset | Size | Task | Metric | Training time (min) | TabFPN performance | Current TDC best performance | TabPFN TDC leaderboard rank |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Caco2_Wang | 906 | Regression | MAE | 8.25 | 0.282 ± 0.005 | 0.276 ± 0.005 | 2nd |
 | HIA_Hou | 578 | Classification | AUROC | 3.17 | 0.987 ± 0.001 | 0.990 ± 0.002 | 5th |
 | Pgp_Broccatelli | 1218 | Classification | AUROC | 12.77 | 0.936 ± 0.004 | 0.938 ± 0.002 | 2th |
-| Bioavailability_Ma | 640 | Classification | AUROC | 4.32 | 0.733 ± 0.015 | 0.753 ± 0.000 | 5th |
-| Lipophilicity_Astrazeneca | 4200 | Regression | MAE | X | X | X | nth |
-| Solubility_Aqsoldb | 9982 | Regression | MAE | X | X | X | nth |
-| Bbb_Martins | 2030 | Classification | AUROC | X | X | X | nth |
-| Ppbr_Az | 2790 | Regression | MAE | X | X | X | nth |
-| Vdss_Lombardo | 1130 | Regression | Spearman | X | X | X | nth |
-| Cyp2D6_Veith | 13130 | X | X | X | X | X | nth |
-| Cyp3A4_Veith | 12328 | X | X | X | X | X | nth |
-| Cyp2C9_Veith | 12092 | X | X | X | X | X | nth |
-| Cyp2D6_Substrate_Carbonmangels | 667 | X | X | X | X | X | nth |
-| Cyp3A4_Substrate_Carbonmangels | 670 | X | X | X | X | X | nth |
-| Cyp2C9_Substrate_Carbonmangels | 669 | X | X | X | X | X | nth |
-| Half_Life_Obach | 667 | X | X | X | X | X | nth |
-| Clearance_Microsome_Az | 1102 | X | X | X | X | X | nth |
-| Clearance_Hepatocyte_Az | 1213 | X | X | X | X | X | nth |
-| Herg | 655 | X | X | X | X | X | nth |
-| Ames | 7278 | X | X | X | X | X | nth |
-| Dili | 475 | X | X | X | X | X | nth |
-| Ld50_Zhu | 7385 | X | X | X | X | X | nth |
+| Bioavailability_Ma | 640 | Classification | AUROC | 4.32 | 0.735 ± 0.016 | 0.753 ± 0.000 | 5th |
+| Bbb_Martins | 2030 | Classification | AUROC | X.XX | 0.917 ± 0.003 | 0.920 ± 0.006 | 2nd |
+| Vdss_Lombardo | 1130 | Regression | Spearman | X.XX | X.XXX ± X.XXX | 0.713 ± 0.007 | nth |
+| Cyp2D6_Substrate_Carbonmangels | 667 | Classification | AUPRC | 4.82 | 0.714 ± 0.009 | 0.736 | 6th |
+| Cyp3A4_Substrate_Carbonmangels | 670 | Classification | AUROC | 3.97 | 0.641 ± 0.004 | 0.667 ± 0.019 | 7th |
+| Cyp2C9_Substrate_Carbonmangels | 669 | Classification | AUPRC | 4.28 | 0.400 ± 0.013 | 0.441 ± 0.033 | 10th |
+| Half_Life_Obach | 667 | Regression | Spearman | X.XX | X.XXX ± X.XXX | 0.576 ± 0.025 | nth |
+| Clearance_Microsome_Az | 1102 | Regression | Spearman | 12.71 | 0.632 ± 0.006 | 0.630 ± 0.010 | 1st |
+| Clearance_Hepatocyte_Az | 1213 | Regression | Spearman | 11.27 | 0.391 ± 0.004 | 0.536 ± 0.02 | >10th |
+| Herg | 655 | Classification | AUROC | 3.54 | 0.850 ± 0.002 | 0.880 ± 0.002 | 6th |
+| Dili | 475 | Classification | AUROC | 1.92 | 0.910 ± 0.005 | 0.925 ± 0.005 | 6th |
 
 ## Advantages
 
@@ -77,3 +69,4 @@ TODO: For training time specify computational resources used
 ## Conclusions
 
 - Is it possible to fine tune on chemical datasets, or create synthetic datasets that resemble common relationships in cheminformatics?
+- Extensions - maybe combine MACCS key with RDKit calculated descriptors
