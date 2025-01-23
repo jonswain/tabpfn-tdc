@@ -51,7 +51,7 @@ def main():
     group = admet_group(path="data/")
     predictions_list = [{}, {}, {}, {}, {}]
 
-    for dataset_name in ["bbb_martins", "vdss_lombardo", "half_life_obach"]:
+    for dataset_name in group.dataset_names:
         print(f"Dataset: {dataset_name}")
         start = time()
         benchmark = group.get(dataset_name)
